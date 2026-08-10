@@ -13,6 +13,7 @@ import pandas as pd
 import numpy as np
 import pickle
 import json
+from pathlib import Path
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -24,30 +25,51 @@ from sklearn.metrics import (
 
 st.set_page_config(page_title="Breast Cancer Classifier Demo", layout="wide")
 
+# Resolve all paths relative to THIS file's location, not the current
+# working directory. This is what prevents "FileNotFoundError: model/..."
+# when the app is launched from a different folder (a common cause of
+# errors when running `streamlit run app.py` from outside project/).
+BASE_DIR = Path(__file__).resolve().parent
+MODEL_DIR = BASE_DIR / "model"
+TEST_DATA_PATH = BASE_DIR / "test_data.csv"
+
 MODEL_FILES = {
-    "Logistic Regression": "model/logistic_regression.pkl",
-    "Decision Tree": "model/decision_tree.pkl",
-    "kNN": "model/knn.pkl",
-    "Naive Bayes": "model/naive_bayes.pkl",
-    "Random Forest (Ensemble)": "model/random_forest_ensemble.pkl",
+    "Logistic Regression": MODEL_DIR / "logistic_regression.pkl",
+    "Decision Tree": MODEL_DIR / "decision_tree.pkl",
+    "kNN": MODEL_DIR / "knn.pkl",
+    "Naive Bayes": MODEL_DIR / "naive_bayes.pkl",
+    "Random Forest (Ensemble)": MODEL_DIR / "random_forest_ensemble.pkl",
 }
+
+
+def _require_file(path: Path, hint: str):
+    if not path.exists():
+        st.error(
+            f"Required file not found: `{path}`.\n\n{hint}"
+        )
+        st.stop()
 
 
 @st.cache_resource
 def load_scaler():
-    with open("model/scaler.pkl", "rb") as f:
+    path = MODEL_DIR / "scaler.pkl"
+    _require_file(path, "Run `python model/train_models.py` from the project root to generate it.")
+    with open(path, "rb") as f:
         return pickle.load(f)
 
 
 @st.cache_resource
-def load_model(path):
+def load_model(path: Path):
+    _require_file(path, "Run `python model/train_models.py` from the project root to regenerate model files.")
     with open(path, "rb") as f:
         return pickle.load(f)
 
 
 @st.cache_data
 def load_feature_names():
-    with open("model/feature_names.json", "r") as f:
+    path = MODEL_DIR / "feature_names.json"
+    _require_file(path, "Run `python model/train_models.py` from the project root to generate it.")
+    with open(path, "r") as f:
         return json.load(f)
 
 
@@ -73,7 +95,8 @@ if uploaded_file is not None:
     test_df = pd.read_csv(uploaded_file)
 else:
     st.info("No file uploaded — using the bundled test_data.csv as a default.")
-    test_df = pd.read_csv("test_data.csv")
+    _require_file(TEST_DATA_PATH, "Run `python model/train_models.py` from the project root to generate it.")
+    test_df = pd.read_csv(TEST_DATA_PATH)
 
 st.write("Preview of test data:", test_df.head())
 
@@ -119,8 +142,10 @@ else:
 # Comparison table across all models (precomputed, from model/metrics.csv)
 # -----------------------------------------------------------------
 st.subheader("Comparison across all models (on the original held-out test split)")
-metrics_df = pd.read_csv("model/metrics.csv")
-st.dataframe(metrics_df, use_container_width=True)
+metrics_path = MODEL_DIR / "metrics.csv"
+_require_file(metrics_path, "Run `python model/train_models.py` from the project root to generate it.")
+metrics_df = pd.read_csv(metrics_path)
+st.dataframe(metrics_df, width="stretch")
 
 # -----------------------------------------------------------------
 # d. Confusion matrix / classification report
