@@ -22,7 +22,7 @@ web application.
 - **Split used:** 80% train / 20% test, stratified by class, `random_state=42`
 
 ## c. GitHub Repository Link
-`<PASTE YOUR GITHUB REPO LINK HERE AFTER YOU PUSH IT>`
+`<https://github.com/daspurbajit-droid/ML-Assignment-2-cancer>`
 
 ## d. Models Used
 
