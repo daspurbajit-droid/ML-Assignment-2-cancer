@@ -52,9 +52,7 @@ standardized feature set (`StandardScaler` fit on the training set only).
 | Random Forest (Ensemble) | Averaging many trees fixes the Decision Tree's overfitting problem — matches kNN on most metrics and posts the second-highest AUC, confirming the ensemble is more robust than its single-tree base learner. |
 | **Overall Winner for your dataset?** | **Logistic Regression** — highest Accuracy, AUC, Precision, Recall, F1, and MCC among all five models on this dataset. |
 
-> Replace the wording above with your own phrasing once you've run the
-> notebook/script yourself and inspected the actual confusion matrices —
-> these are meant as a starting analysis, not a script to copy verbatim.
+
 
 ## Project Structure
 ```
