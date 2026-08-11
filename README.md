@@ -83,4 +83,4 @@ streamlit run app.py
 ```
 
 ## Deployment
-Deployed on Streamlit Community Cloud: `<PASTE YOUR LIVE STREAMLIT APP LINK HERE>`
+Deployed on Streamlit Community Cloud: `<(https://ml-assignment-2-cancer-k2vyjzo2bexrabznovzpem.streamlit.app/)>`
